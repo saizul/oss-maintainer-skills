@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Environments
+.venv/
+venv/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+
+# Release build output
+dist/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Local files
+.env
+*.log

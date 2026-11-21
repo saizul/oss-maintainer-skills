@@ -1,0 +1,36 @@
+name: Release assets
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  zip-skills:
+    name: Attach skill zips
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Validate before packaging
+        run: python tools/validate_skills.py --no-exec
+      - name: Build zips
+        run: |
+          mkdir -p dist
+          cd skills
+          for d in */; do
+            name="${d%/}"
+            zip -qr "../dist/${name}.zip" "$name" -x '*/__pycache__/*' '*.pyc'
+          done
+          zip -qr "../dist/oss-maintainer-skills-all.zip" . -x '*/__pycache__/*' '*.pyc'
+          cd ..
+          ls -l dist
+      - name: Upload to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" dist/*.zip --clobber

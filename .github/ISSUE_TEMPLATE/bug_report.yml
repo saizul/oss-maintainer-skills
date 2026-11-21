@@ -1,0 +1,45 @@
+name: Bug report
+description: A skill gave wrong instructions, or a script crashed or produced wrong output
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Never paste tokens, secrets or private repository content.**
+  - type: input
+    id: skill
+    attributes:
+      label: Skill
+      placeholder: "repo-health-check"
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Claude Code (plugin install)
+        - Claude Code (manual copy)
+        - Codex CLI
+        - Other / script run directly
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: The prompt or command, and the output or behaviour you got.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "macOS 15, Python 3.13, skills v0.1.0"

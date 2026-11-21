@@ -1,0 +1,22 @@
+name: Improvement
+description: Suggest a better workflow, check or template for an existing skill
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: input
+    id: skill
+    attributes:
+      label: Skill
+      placeholder: "issue-triage"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: New check, script option, reference section or instruction.

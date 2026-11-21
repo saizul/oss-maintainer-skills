@@ -1,0 +1,17 @@
+# Tooling configuration only: this repository is a collection of Agent Skills,
+# not an installable Python package.
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["E501", "RUF001", "RUF002", "RUF003", "SIM108"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["conftest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

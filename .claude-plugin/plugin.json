@@ -1,0 +1,25 @@
+{
+  "name": "oss-maintainer-skills",
+  "displayName": "OSS Maintainer Skills",
+  "version": "0.1.0",
+  "description": "Agent Skills for open-source maintainers: repo health score, README writing, contributor onboarding and labels, Conventional Commits releases, GitHub Actions CI, issue triage, security policy and Dependabot, release checklist and launch posts.",
+  "author": {
+    "name": "Saizul Amin",
+    "url": "https://github.com/saizul"
+  },
+  "homepage": "https://github.com/saizul/oss-maintainer-skills",
+  "repository": "https://github.com/saizul/oss-maintainer-skills",
+  "license": "MIT",
+  "keywords": [
+    "open-source",
+    "maintainer",
+    "github",
+    "readme",
+    "changelog",
+    "semver",
+    "ci",
+    "github-actions",
+    "security",
+    "community"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "oss-maintainer-skills",
+  "description": "Skills that help open-source maintainers grow and run their projects.",
+  "owner": {
+    "name": "Saizul Amin",
+    "url": "https://github.com/saizul"
+  },
+  "plugins": [
+    {
+      "name": "oss-maintainer-skills",
+      "source": "./",
+      "description": "Agent Skills for open-source maintainers: repo health score, README writing, contributor onboarding and labels, Conventional Commits releases, GitHub Actions CI, issue triage, security policy and Dependabot, release checklist and launch posts.",
+      "category": "productivity",
+      "tags": [
+        "open-source",
+        "maintainer",
+        "github"
+      ],
+      "strict": true,
+      "skills": [
+        "./skills/repo-health-check",
+        "./skills/readme-writer",
+        "./skills/contributor-onboarding",
+        "./skills/conventional-commits-release",
+        "./skills/github-actions-ci",
+        "./skills/issue-triage",
+        "./skills/security-policy",
+        "./skills/release-checklist",
+        "./skills/project-launch"
+      ]
+    }
+  ]
+}
