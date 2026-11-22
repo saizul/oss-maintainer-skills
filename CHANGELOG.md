@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `readme-writer`: `readme_lint.py` rule `broken-anchor` (error) for `#anchor` links, such as
+  table of contents entries, that match no heading (GitHub slug rules, including the `-1`
+  suffix for duplicate headings) or HTML `id`/`name` anchor.
+
 ## [0.1.0] - 2026-11-21
 
 ### Added

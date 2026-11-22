@@ -1,6 +1,6 @@
 ---
 name: readme-writer
-description: Writes or rewrites a project README that converts visitors into users and contributors - one-line pitch, badges, a 60-second quick start, real examples, features, FAQ, contributing and license - and lints it for missing sections, broken relative links, missing alt text and a late first code block. Use when the user asks to write, improve, review or restructure a README, says nobody understands or stars the project, or is preparing an open-source launch.
+description: Writes or rewrites a project README that converts visitors into users and contributors - one-line pitch, badges, a 60-second quick start, real examples, features, FAQ, contributing and license - and lints it for missing sections, broken relative links, table-of-contents anchors that match no heading, missing alt text and a late first code block. Use when the user asks to write, improve, review or restructure a README, says nobody understands or stars the project, or is preparing an open-source launch.
 license: MIT
 metadata:
   author: Saizul Amin
@@ -86,6 +86,7 @@ in under a minute, then show them how to go further and how to help.
 | faq, toc | info | suggested |
 | alt-text | warning | image without alt text |
 | broken-link | error | relative link to a missing file, or an empty link |
+| broken-anchor | error | `#anchor` link (table of contents) that matches no heading or HTML `id`/`name`, using GitHub's slug rules |
 | placeholder | warning | TODO, TBD or lorem ipsum left in |
 
 Exit 1 on errors (and on warnings with `--strict`).

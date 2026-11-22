@@ -29,7 +29,7 @@ standard-library Python scripts that do the parts that must be exact.
 | Skill | What it does | Example prompt |
 | --- | --- | --- |
 | [repo-health-check](skills/repo-health-check/SKILL.md) | Scores a repo 0-100 (README, LICENSE, community files, templates, CI, tests, badges, Dependabot) and fixes gaps in order of impact | "Is this repo ready to open source?" |
-| [readme-writer](skills/readme-writer/SKILL.md) | Writes or restructures a README: pitch, badges, 60-second quick start, examples, FAQ; lints sections, links and alt text | "Rewrite my README so people get it in 30 seconds" |
+| [readme-writer](skills/readme-writer/SKILL.md) | Writes or restructures a README: pitch, badges, 60-second quick start, examples, FAQ; lints sections, links, TOC anchors and alt text | "Rewrite my README so people get it in 30 seconds" |
 | [contributor-onboarding](skills/contributor-onboarding/SKILL.md) | CONTRIBUTING.md from your real commands, a consistent label set (dry-run `gh` script), good first issues | "Help me get my first contributors" |
 | [conventional-commits-release](skills/conventional-commits-release/SKILL.md) | Next semver and a changelog section from Conventional Commits, with 0.x and `-rc.N` rules | "What's the next version? Write the changelog" |
 | [github-actions-ci](skills/github-actions-ci/SKILL.md) | Generates GitHub Actions CI for Python, Node.js (npm/pnpm/yarn) or PHP with matrices and caching | "Add CI that tests Python 3.11 to 3.14" |
