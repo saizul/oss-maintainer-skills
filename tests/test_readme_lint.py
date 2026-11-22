@@ -139,3 +139,36 @@ def test_bold_pitch_sentence_is_split():
         "**demo turns messy CSV files into clean JSON.** " + "More detail here. " * 20,
     )
     assert "pitch" not in rules(rl.lint(text))
+
+
+def test_heading_slug_matches_github():
+    assert rl.heading_slug("Quick start") == "quick-start"
+    assert rl.heading_slug("What's `new` in v2.0?") == "whats-new-in-v20"
+    assert rl.heading_slug("[Docs](https://x.example) & FAQ") == "docs--faq"
+    assert rl.heading_slug("snake_case_name") == "snake_case_name"
+    assert rl.heading_slug("Café") == "café"
+
+
+def test_broken_anchor_links(tmp_path):
+    write(tmp_path, "CONTRIBUTING.md")
+    write(tmp_path, "LICENSE")
+    toc = (
+        "- [Installation](#installation)\n"
+        "- [Usage](#usage)\n"  # renamed to Quick start: broken
+        "- [FAQ](#faq)\n"
+        "- [Second FAQ](#faq-1)\n"  # duplicate heading suffix
+        "- [Legacy](#legacy-anchor)\n"  # HTML anchor
+        "- [Encoded](#quick%20start)\n"  # not GitHub's slug: broken
+    )
+    text = GOOD.replace("## Installation", toc + "\n## Installation", 1)
+    text += '\n## FAQ\n\nMore.\n\n<a name="legacy-anchor"></a>\n\n```md\n[in code](#nowhere)\n```\n'
+    findings = [f for f in rl.lint(text, tmp_path) if f.rule == "broken-anchor"]
+    assert [f.message.split("'")[1] for f in findings] == ["#usage", "#quick%20start"]
+    assert all(f.severity == "error" for f in findings)
+
+
+def test_file_links_with_fragments_are_not_anchor_checked(tmp_path):
+    write(tmp_path, "CONTRIBUTING.md")
+    write(tmp_path, "LICENSE")
+    text = GOOD.replace("See [CONTRIBUTING.md](CONTRIBUTING.md).", "See [setup](CONTRIBUTING.md#setup).")
+    assert rl.lint(text, tmp_path) == []

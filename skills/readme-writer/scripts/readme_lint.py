@@ -3,7 +3,8 @@
 
 Checks the title, one-line pitch, badges, install and quick-start sections,
 code examples, how far a reader scrolls before the first command, relative
-links, image alt text, and the contributing and license sections.
+links, in-page #anchor links (table of contents), image alt text, and the
+contributing and license sections.
 
 Read-only. Exit codes: 0 = no errors (and no warnings with --strict),
 1 = findings at the failing level, 2 = usage error.
@@ -85,6 +86,34 @@ def section_has_code(rows: list[tuple[int, str, bool]], sections: list[Section],
 
 BADGE_RE = re.compile(r"!\[[^\]]*\]\([^)]*(shields\.io|badge|/workflows/|codecov|badgen)[^)]*\)")
 TOC_LINE = re.compile(r"^\s*(?:[-*]|\d+\.)\s+\[[^\]]+\]\(#")
+HTML_ANCHOR = re.compile(r"<a\s[^>]*(?:name|id)\s*=\s*[\"']([^\"']+)[\"']|\sid\s*=\s*[\"']([^\"']+)[\"']", re.I)
+
+
+def heading_slug(title: str) -> str:
+    """GitHub's heading anchor: lowercase, markup and punctuation removed, spaces to '-'."""
+    text = re.sub(r"!?\[([^\]]*)\]\([^)]*\)", r"\1", title)  # links and images -> label
+    text = re.sub(r"<[^>]+>", "", text)  # inline HTML
+    text = text.replace("`", "").lower()
+    text = "".join(c for c in text if c.isalnum() or c in " -_")
+    return text.replace(" ", "-")
+
+
+def anchors(sections: list[Section], rows: list[tuple[int, str, bool]]) -> set[str]:
+    """Every in-page anchor: heading slugs (with GitHub's -1, -2 suffixes) and HTML ids."""
+    found: set[str] = set()
+    counts: dict[str, int] = {}
+    for section in sections:
+        slug = heading_slug(section.title)
+        n = counts.get(slug, 0)
+        counts[slug] = n + 1
+        found.add(slug if n == 0 else f"{slug}-{n}")
+    for _, line, in_code in rows:
+        if not in_code:
+            for m in HTML_ANCHOR.finditer(line):
+                found.add((m.group(1) or m.group(2)).lower())
+    return found
+
+
 LINK_RE = re.compile(r"(!?)\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 
 
@@ -201,6 +230,7 @@ def lint(text: str, base_dir: Path | None = None, max_scroll: int = 60) -> list[
     if len([s for s in sections if s.level == 2]) >= 8 and not has_toc:
         add("toc", "info", "The README has many sections; add a table of contents near the top.")
 
+    known_anchors = anchors(sections, rows)
     for i, line, in_code in rows:
         if in_code:
             continue
@@ -208,6 +238,10 @@ def lint(text: str, base_dir: Path | None = None, max_scroll: int = 60) -> list[
             is_image, label, target = m.group(1) == "!", m.group(2), m.group(3)
             if is_image and not label.strip():
                 add("alt-text", "warning", f"Image '{target}' has no alt text.", i)
+            if target.startswith("#") and len(target) > 1:
+                fragment = unquote(target[1:]).lower()
+                if fragment not in known_anchors:
+                    add("broken-anchor", "error", f"Link '{target}' does not match any heading in the README.", i)
             if base_dir is not None and not re.match(r"^([a-z][a-z0-9+.-]*:|#|//)", target, re.I):
                 rel = unquote(target.split("#", 1)[0].split("?", 1)[0])
                 if rel and not (base_dir / rel).exists():
