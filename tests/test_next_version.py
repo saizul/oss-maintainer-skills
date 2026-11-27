@@ -138,3 +138,49 @@ def test_cli_git_since_latest_tag(tmp_path):
 def test_cli_git_outside_repo(tmp_path):
     proc = run_script("conventional-commits-release", "next_version", "--git", "--repo-dir", str(tmp_path))
     assert proc.returncode == 2
+
+
+def test_git_revert_commit_is_a_revert():
+    c = nv.parse_commit("abc", 'Revert "feat(api): add bulk export"', "This reverts commit 1234567.")
+    assert (c.type, c.subject, c.conventional, c.breaking) == ("revert", "feat(api): add bulk export", True, False)
+    assert nv.bump_for([c]) == "patch"
+    notes = nv.changelog("1.2.1", [c], "2026-11-27", None, set())
+    assert "### Reverts\n\n- feat(api): add bulk export (abc)" in notes
+    assert "Other changes" not in notes
+
+
+def test_revert_lookalikes_are_not_git_reverts():
+    assert nv.parse_commit("", "Revert the cache change").type == "other"
+    assert nv.parse_commit("", 'revert: "feat: x"').type == "revert"
+
+
+def test_pr_references_link_with_repo_url():
+    cs = [nv.parse_commit("a" * 40, "feat: add --only flag (#12)"), nv.parse_commit("", "fix: retry on 503 (#7) (#9)")]
+    url = "https://github.com/OWNER/NAME/"
+    notes = nv.changelog("1.3.0", cs, "2026-11-27", url, set())
+    assert "- add --only flag ([#12](https://github.com/OWNER/NAME/pull/12)) ([aaaaaaa](" in notes
+    assert (
+        "retry on 503 ([#7](https://github.com/OWNER/NAME/pull/7)) ([#9](https://github.com/OWNER/NAME/pull/9))"
+        in notes
+    )
+    plain = nv.changelog("1.3.0", cs, "2026-11-27", None, set())
+    assert "- add --only flag (#12) (aaaaaaa)" in plain
+
+
+def test_cli_revert_and_links(tmp_path):
+    log = tmp_path / "log.txt"
+    log.write_text('Revert "feat: dark mode"\nfix: crash on start (#4)\n', encoding="utf-8")
+    out = run_script(
+        "conventional-commits-release",
+        "next_version",
+        "--input",
+        str(log),
+        "--current",
+        "1.0.0",
+        "--repo-url",
+        "https://github.com/o/r",
+        "--json",
+    )
+    data = json.loads(out.stdout)
+    assert data["next"] == "1.0.1" and data["non_conventional"] == []
+    assert "[#4](https://github.com/o/r/pull/4)" in data["changelog"] and "- feat: dark mode" in data["changelog"]

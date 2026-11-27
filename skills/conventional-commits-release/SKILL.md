@@ -68,7 +68,10 @@ number and a changelog section. It only reads git; it never tags or commits.
 - `--pre rc`: produce `1.5.0-rc.1`; running again from `1.5.0-rc.1` gives `1.5.0-rc.2`.
   Without `--pre`, a prerelease is finished: `1.5.0-rc.2` + fix gives `1.5.0`.
 - `--fail-if-none` exits 1 when nothing warrants a release (useful in CI).
-- `--repo-url https://github.com/OWNER/REPO` links commit hashes.
+- `--repo-url https://github.com/OWNER/REPO` links commit hashes and `(#123)` pull request
+  references (as added by squash merges).
+- `git revert` commits (`Revert "feat: add x"`) count as `revert` (patch bump) and are
+  listed under Reverts with the original header.
 - `--include docs,other` also lists documentation and other commits.
 
 ## Writing commit messages
