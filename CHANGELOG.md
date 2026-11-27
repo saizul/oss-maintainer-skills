@@ -8,9 +8,17 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `conventional-commits-release`: with `--repo-url`, `next_version.py` links `(#123)` pull
+  request references in changelog entries to `/pull/123`.
 - `readme-writer`: `readme_lint.py` rule `broken-anchor` (error) for `#anchor` links, such as
   table of contents entries, that match no heading (GitHub slug rules, including the `-1`
   suffix for duplicate headings) or HTML `id`/`name` anchor.
+
+### Fixed
+
+- `conventional-commits-release`: commits created by `git revert` (`Revert "feat: add x"`)
+  were counted as non-conventional "other" commits; they are now `revert` commits (patch
+  bump) listed under Reverts.
 
 ## [0.1.0] - 2026-11-21
 

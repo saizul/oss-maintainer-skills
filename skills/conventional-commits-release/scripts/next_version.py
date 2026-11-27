@@ -28,6 +28,8 @@ SEMVER = re.compile(
 )
 HEADER = re.compile(r"^(?P<type>[a-zA-Z]+)(?:\((?P<scope>[^()]*)\))?(?P<bang>!)?: (?P<subject>.+)$")
 BREAKING_FOOTER = re.compile(r"^BREAKING[ -]CHANGE: (.+)", re.M)
+GIT_REVERT = re.compile(r'^Revert "(?P<header>.+)"$')
+PR_REF = re.compile(r"\(#(\d+)\)")
 
 SECTIONS = [
     ("breaking", "Breaking changes"),
@@ -54,8 +56,13 @@ class Commit:
 
 
 def parse_commit(sha: str, header: str, body: str = "") -> Commit:
-    m = HEADER.match(header.strip())
     footer = BREAKING_FOOTER.search(body or "")
+    reverted = GIT_REVERT.match(header.strip())
+    if reverted:
+        # `git revert` writes: Revert "feat(api): add x". Treat it as a revert commit; the
+        # subject keeps the reverted header so the changelog says what was undone.
+        return Commit(sha, "revert", "", reverted.group("header").strip(), False, "", True)
+    m = HEADER.match(header.strip())
     if not m:
         return Commit(sha, "other", "", header.strip(), bool(footer), footer.group(1) if footer else "", False)
     breaking = bool(m.group("bang")) or bool(footer)
@@ -168,6 +175,8 @@ def changelog(version: str, commits: list[Commit], date: str, repo_url: str | No
             if c.hash:
                 short = c.hash[:7]
                 ref = f" ([{short}]({repo_url.rstrip('/')}/commit/{c.hash}))" if repo_url else f" ({short})"
+            if repo_url:
+                text = PR_REF.sub(rf"([#\1]({repo_url.rstrip('/')}/pull/\1))", text)
             lines.append(f"- {scope}{text}{ref}")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
